@@ -1,0 +1,3 @@
+[submodule "Drivers/mh-z14a_sm"]
+	path = Drivers/mh-z14a_sm
+	url = https://github.com/bazhen-paseka/mh-z14a_sm.git

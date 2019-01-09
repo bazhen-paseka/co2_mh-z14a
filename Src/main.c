@@ -43,6 +43,8 @@
 
 /* USER CODE BEGIN Includes */
 
+#include "mh-z14_sm.h"
+
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -95,12 +97,16 @@ int main(void)
   MX_GPIO_Init();
   /* USER CODE BEGIN 2 */
 
+  	  MH_Z14A_Init();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
+		MH_Z14A_Main();
 
   /* USER CODE END WHILE */
 
