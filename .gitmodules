@@ -4,3 +4,6 @@
 [submodule "Drivers/lcd1602_fc113_sm"]
 	path = Drivers/lcd1602_fc113_sm
 	url = https://github.com/bazhen-paseka/lcd1602_fc113_sm.git
+[submodule "Drivers/ringbuffer_dma_sm"]
+	path = Drivers/ringbuffer_dma_sm
+	url = https://github.com/bazhen-paseka/ringbuffer_dma_sm.git

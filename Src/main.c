@@ -39,6 +39,7 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f1xx_hal.h"
+#include "dma.h"
 #include "i2c.h"
 #include "usart.h"
 #include "gpio.h"
@@ -47,6 +48,7 @@
 
 #include "mh-z14_sm.h"
 #include "lcd1602_fc113_sm.h"
+#include "ringbuffer_dma_sm.h"
 
 /* USER CODE END Includes */
 
@@ -98,20 +100,28 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_USART1_UART_Init();
   MX_I2C1_Init();
+  MX_USART3_UART_Init();
+  MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
 
   	  MH_Z14A_Init();
   	  LCD1602_General_Init();
+  	  RingBuffer_DMA_Connect();
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+		char http_req[200];
+		MH_Z14A_Main(http_req);
+		RingBuffer_DMA_Main(http_req);
 
-		MH_Z14A_Main();
+		HAL_Delay(60000);
 
   /* USER CODE END WHILE */
 
