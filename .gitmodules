@@ -1,3 +1,6 @@
 [submodule "Drivers/mh-z14a_sm"]
 	path = Drivers/mh-z14a_sm
 	url = https://github.com/bazhen-paseka/mh-z14a_sm.git
+[submodule "Drivers/lcd1602_fc113_sm"]
+	path = Drivers/lcd1602_fc113_sm
+	url = https://github.com/bazhen-paseka/lcd1602_fc113_sm.git

@@ -39,12 +39,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32f1xx_hal.h"
+#include "i2c.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* USER CODE BEGIN Includes */
 
 #include "mh-z14_sm.h"
+#include "lcd1602_fc113_sm.h"
 
 /* USER CODE END Includes */
 
@@ -97,10 +99,11 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART1_UART_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
 
   	  MH_Z14A_Init();
-
+  	  LCD1602_General_Init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
