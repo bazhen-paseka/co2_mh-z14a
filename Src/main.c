@@ -41,6 +41,7 @@
 #include "stm32f1xx_hal.h"
 #include "dma.h"
 #include "i2c.h"
+#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
@@ -105,7 +106,11 @@ int main(void)
   MX_I2C1_Init();
   MX_USART3_UART_Init();
   MX_USART2_UART_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+
+  	  HAL_TIM_Base_Start(&htim3);
+  	  HAL_TIM_Base_Start_IT(&htim3);
 
   	  MH_Z14A_Init();
   	  LCD1602_General_Init();
@@ -117,11 +122,16 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if (GetTimeFlag() == 1)
+	  {
 		char http_req[200];
-		MH_Z14A_Main(http_req);
-		RingBuffer_DMA_Main(http_req);
+		uint32_t current_CO2_u32 = MH_Z14A_Main();
 
-		HAL_Delay(60000);
+		sprintf(http_req, "&field7=%d\r\n\r\n", (int)current_CO2_u32 );
+
+		RingBuffer_DMA_Main(http_req);
+		SetTimeFlag(0);
+	  }
 
   /* USER CODE END WHILE */
 
