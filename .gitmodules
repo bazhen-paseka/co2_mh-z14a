@@ -7,3 +7,6 @@
 [submodule "Drivers/ringbuffer_dma_sm"]
 	path = Drivers/ringbuffer_dma_sm
 	url = https://github.com/bazhen-paseka/ringbuffer_dma_sm.git
+[submodule "Drivers/average_calc_3_from_5"]
+	path = Drivers/average_calc_3_from_5
+	url = https://github.com/bazhen-paseka/average_calc_3_from_5.git

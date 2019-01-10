@@ -47,9 +47,16 @@
 
 /* USER CODE BEGIN Includes */
 
-#include "mh-z14_sm.h"
-#include "lcd1602_fc113_sm.h"
-#include "ringbuffer_dma_sm.h"
+	#include "mh-z14_sm.h"
+	#include "lcd1602_fc113_sm.h"
+	#include "ringbuffer_dma_sm.h"
+	#include "average_calc_3_from_5.h"
+
+	#define CIRCLE_QNT 5
+	uint32_t co2_u32[CIRCLE_QNT];
+	char uart_buff_char[100];
+
+	#define ADR_I2C_FC113 0x27
 
 /* USER CODE END Includes */
 
@@ -109,12 +116,32 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  	  HAL_TIM_Base_Start(&htim3);
-  	  HAL_TIM_Base_Start_IT(&htim3);
+	HAL_TIM_Base_Start(&htim3);
+	HAL_TIM_Base_Start_IT(&htim3);
 
-  	  MH_Z14A_Init();
-  	  LCD1602_General_Init();
-  	  RingBuffer_DMA_Connect();
+	MH_Z14A_Init();
+
+	lcd1602_fc113_struct h1_lcd1602_fc113 =
+		{
+			.i2c = &hi2c1,
+			.device_i2c_address = ADR_I2C_FC113
+		};
+
+	LCD1602_Init(&h1_lcd1602_fc113);
+	I2C_ScanBus(&h1_lcd1602_fc113);
+	LCD1602_Clear(&h1_lcd1602_fc113);
+
+	sprintf(uart_buff_char,"LCD1602 Started\r\n");
+	LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
+	HAL_Delay(1000);
+
+		LCD1602_Clear(&h1_lcd1602_fc113);
+		sprintf(uart_buff_char,"connect WiFi...\r\n");
+		LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
+	RingBuffer_DMA_Connect();
+		LCD1602_Clear(&h1_lcd1602_fc113);
+		sprintf(uart_buff_char,"WiFi connected\r\n");
+		LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
 
   /* USER CODE END 2 */
 
@@ -124,12 +151,36 @@ int main(void)
   {
 	  if (GetTimeFlag() == 1)
 	  {
-		char http_req[200];
-		uint32_t current_CO2_u32 = MH_Z14A_Main();
+		static uint8_t circle=0;
 
-		sprintf(http_req, "&field7=%d\r\n\r\n", (int)current_CO2_u32 );
+		if (circle < CIRCLE_QNT)
+		{
+			LCD1602_Clear(&h1_lcd1602_fc113);
+			sprintf(uart_buff_char,"%d) ", (int)(CIRCLE_QNT-circle));
+			HAL_UART_Transmit(&huart1, (uint8_t *)uart_buff_char, strlen(uart_buff_char), 100);
+			LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
+			co2_u32[circle] = MH_Z14A_Main();
 
-		RingBuffer_DMA_Main(http_req);
+			sprintf(uart_buff_char,"CO2: %d ppm\r\n", (int)co2_u32[circle]);
+			circle++;
+
+			LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
+			HAL_UART_Transmit(&huart1, (uint8_t *)uart_buff_char, strlen(uart_buff_char), 100);
+		}
+
+		if (circle == CIRCLE_QNT)
+		{
+			uint32_t total_co2_u32 = Calc_Average( co2_u32, CIRCLE_QNT);
+
+			sprintf(uart_buff_char,"total CO2: %d\r\n", (int)total_co2_u32);
+			LCD1602_Clear(&h1_lcd1602_fc113);
+			LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
+
+			char http_req[200];
+			sprintf(http_req, "&field7=%d\r\n\r\n", (int)total_co2_u32 );
+			RingBuffer_DMA_Main(http_req);
+			circle = 0;
+		}
 		SetTimeFlag(0);
 	  }
 
