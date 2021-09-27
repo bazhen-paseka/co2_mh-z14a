@@ -10,7 +10,7 @@
 
 	#define THINGSPEAK_ADDRESS	"api.thingspeak.com"
 	#define THINGSPEAK_API_KEY	"5ZRXVI7HIJQPGKID"				// Enter your Write API here
-	#define WIFI_SSID			"Tapac"
+	#define WIFI_SSID			"Kobza-J"
 	#define WIFI_PASS			"27051329"
 
 	#define	DEVICE	  4
