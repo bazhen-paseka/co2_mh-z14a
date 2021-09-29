@@ -38,6 +38,9 @@
 	char uart_buff_char[100];
 
 	#define ADR_I2C_FC113 0x27
+	#define SOFT_VERSION 	120
+
+	#define DEBUG_UART		&huart1
 
 /* USER CODE END Includes */
 
@@ -110,6 +113,23 @@ int main(void)
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
+	sprintf( uart_buff_char, "\r\n\r\n\t Start:\r\n"  ) ;
+	HAL_UART_Transmit( DEBUG_UART, (uint8_t *)uart_buff_char, strlen(uart_buff_char), 1000 );
+
+	int soft_version_arr_int[3];
+	soft_version_arr_int[0] = ((SOFT_VERSION) / 100) %10 ;
+	soft_version_arr_int[1] = ((SOFT_VERSION) /  10) %10 ;
+	soft_version_arr_int[2] = ((SOFT_VERSION)      ) %10 ;
+
+	sprintf(uart_buff_char,"\t Ver: v%d.%d.%d\r\n" ,
+			soft_version_arr_int[0] , soft_version_arr_int[1] , soft_version_arr_int[2] ) ;
+	HAL_UART_Transmit( DEBUG_UART, (uint8_t *)uart_buff_char , strlen(uart_buff_char) , 1000 ) ;
+
+	#define 	DATE_as_int_str 	(__DATE__)
+	#define 	TIME_as_int_str 	(__TIME__)
+	sprintf(uart_buff_char,"\t build: %s,  time: %s. \r\n" , DATE_as_int_str , TIME_as_int_str ) ;
+	HAL_UART_Transmit( DEBUG_UART, (uint8_t *)uart_buff_char , strlen(uart_buff_char) , 1000 ) ;
+
   	HAL_TIM_Base_Start_IT(&htim3);
 	MH_Z14A_Init();
 
@@ -131,7 +151,9 @@ int main(void)
 	LCD1602_Clear(&h1_lcd1602_fc113);
 	sprintf(uart_buff_char,"connect WiFi...\r\n");
 	LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
+
 	RingBuffer_DMA_Connect();
+
 	LCD1602_Clear(&h1_lcd1602_fc113);
 	sprintf(uart_buff_char,"WiFi Started\r\n");
 	LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
@@ -150,7 +172,7 @@ int main(void)
 		{
 			LCD1602_Clear(&h1_lcd1602_fc113);
 			sprintf(uart_buff_char,"%d) ", (int)(CIRCLE_QNT-circle));
-			HAL_UART_Transmit(&huart1, (uint8_t *)uart_buff_char, strlen(uart_buff_char), 100);
+			HAL_UART_Transmit(DEBUG_UART, (uint8_t *)uart_buff_char, strlen(uart_buff_char), 100);
 			LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
 			co2_u32[circle] = MH_Z14A_Main();
 
