@@ -120,7 +120,7 @@ int main(void)
 		};
 
 	LCD1602_Init(&h1_lcd1602_fc113);
-	LCD1602_scan_I2C_bus( &h1_lcd1602_fc113 ) ;
+	LCD1602_Scan_I2C_bus( &h1_lcd1602_fc113 ) ;
 	LCD1602_Scan_I2C_to_UART( &h1_lcd1602_fc113, &huart1 ) ;
 	LCD1602_Clear(&h1_lcd1602_fc113);
 
