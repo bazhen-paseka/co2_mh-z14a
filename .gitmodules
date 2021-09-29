@@ -10,3 +10,6 @@
 [submodule "Drivers/average_calc_3_from_5"]
 	path = Drivers/average_calc_3_from_5
 	url = https://github.com/bazhen-paseka/average_calc_3_from_5.git
+[submodule "Drivers/One-pin-debug-SM"]
+	path = Drivers/One-pin-debug-SM
+	url = https://github.com/bazhen-paseka/One-pin-debug-SM.git

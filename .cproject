@@ -34,6 +34,7 @@
 								<option id="gnu.c.compiler.option.debugging.level.1431081633" name="Debug Level" superClass="gnu.c.compiler.option.debugging.level" useByScannerDiscovery="false" value="gnu.c.debugging.level.max" valueType="enumerated" />
 								<option id="gnu.c.compiler.option.include.paths.252300013" name="Include paths (-I)" superClass="gnu.c.compiler.option.include.paths" useByScannerDiscovery="false" valueType="includePath">
 									<listOptionValue builtIn="false" value="../Inc" />
+									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Drivers/One-pin-debug-SM}&quot;" />
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Drivers/Local_config}&quot;" />
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Drivers/average_calc_3_from_5}&quot;" />
 									<listOptionValue builtIn="false" value="&quot;${workspace_loc:/${ProjName}/Drivers/ringbuffer_dma_sm}&quot;" />
@@ -45,8 +46,6 @@
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.471270580" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
-									
-									
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
 									<listOptionValue builtIn="false" value="STM32F103xB" />
 								</option>
@@ -65,8 +64,6 @@
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.952483601" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def" useByScannerDiscovery="false" valueType="definedSymbols">
-									
-									
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
 									<listOptionValue builtIn="false" value="STM32F103xB" />
 								</option>
@@ -151,8 +148,6 @@
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
 								</option>
 								<option id="gnu.c.compiler.option.preprocessor.def.symbols.471270580" name="Defined symbols (-D)" superClass="gnu.c.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
-									
-									
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
 									<listOptionValue builtIn="false" value="STM32F103xB" />
 								</option>
@@ -171,8 +166,6 @@
 									<listOptionValue builtIn="false" value="../Drivers/CMSIS/Include" />
 								</option>
 								<option id="gnu.cpp.compiler.option.preprocessor.def.symbols.2098724975" name="Defined symbols (-D)" superClass="gnu.cpp.compiler.option.preprocessor.def.symbols" useByScannerDiscovery="false" valueType="definedSymbols">
-									
-									
 									<listOptionValue builtIn="false" value="USE_HAL_DRIVER" />
 									<listOptionValue builtIn="false" value="STM32F103xB" />
 								</option>

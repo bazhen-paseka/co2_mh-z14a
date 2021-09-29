@@ -32,15 +32,7 @@
 	#include "lcd1602_fc113_sm.h"
 	#include "ringbuffer_dma_sm.h"
 	#include "average_calc_3_from_5.h"
-
-	#define CIRCLE_QNT 5
-	uint32_t co2_u32[CIRCLE_QNT];
-	char uart_buff_char[100];
-
-	#define ADR_I2C_FC113 0x27
-	#define SOFT_VERSION 	120
-
-	#define DEBUG_UART		&huart1
+	#include "one-pin-debug-sm.h"
 
 /* USER CODE END Includes */
 
@@ -51,6 +43,16 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+	#define CIRCLE_QNT 5
+	uint32_t co2_u32[CIRCLE_QNT];
+	char uart_buff_char[100];
+
+	#define ADR_I2C_FC113 0x27
+	#define SOFT_VERSION 	120
+
+	#define DEBUG_UART		&huart1
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
