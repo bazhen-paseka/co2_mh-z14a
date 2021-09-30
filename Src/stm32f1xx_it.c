@@ -54,7 +54,6 @@
 /* USER CODE BEGIN 0 */
 
 	#include "mh-z14_sm.h"
-	static uint8_t sec_counter=0;
 
 /* USER CODE END 0 */
 
@@ -237,13 +236,7 @@ void TIM3_IRQHandler(void)
 {
   /* USER CODE BEGIN TIM3_IRQn 0 */
 
-	HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-	sec_counter++;
-	if (sec_counter>60)
-	{
-		SetTimeFlag(1);
-		sec_counter = 0;
-	}
+	SetTimeFlag(1);
 
   /* USER CODE END TIM3_IRQn 0 */
   HAL_TIM_IRQHandler(&htim3);
