@@ -32,12 +32,7 @@
 	#include "lcd1602_fc113_sm.h"
 	#include "ringbuffer_dma_sm.h"
 	#include "average_calc_3_from_5.h"
-
-	#define CIRCLE_QNT 5
-	uint32_t co2_u32[CIRCLE_QNT];
-	char uart_buff_char[100];
-
-	#define ADR_I2C_FC113 0x27
+	#include "one-pin-debug-sm.h"
 
 /* USER CODE END Includes */
 
@@ -48,6 +43,11 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+
+	#define CIRCLE_QNT 5
+	#define ADR_I2C_FC113 0x27
+	#define SOFT_VERSION 	120
+
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
@@ -56,6 +56,10 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+
+	extern		OnePin_Debug_struct		hOnePin;
+	uint32_t co2_u32[CIRCLE_QNT];
+	char uart_buff_char[100];
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -103,15 +107,32 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_DMA_Init();
-  MX_USART1_UART_Init();
   MX_I2C1_Init();
   MX_USART3_UART_Init();
   MX_USART2_UART_Init();
   MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
 
-  	HAL_TIM_Base_Start_IT(&htim3);
-	MH_Z14A_Init();
+	OnePin_Init(  ONE_DEBUG_GPIO_Port, ONE_DEBUG_Pin, 1) ;
+
+	sprintf( uart_buff_char, "\r\n\r\n\t Start:\r\n"  ) ;
+	One_pin_debug_print ( (uint8_t *)uart_buff_char, strlen(uart_buff_char) ) ;
+
+	int soft_version_arr_int[3];
+	soft_version_arr_int[0] = ((SOFT_VERSION) / 100) %10 ;
+	soft_version_arr_int[1] = ((SOFT_VERSION) /  10) %10 ;
+	soft_version_arr_int[2] = ((SOFT_VERSION)      ) %10 ;
+
+	sprintf( uart_buff_char, "\t Ver: v%d.%d.%d\r\n", soft_version_arr_int[0], soft_version_arr_int[1], soft_version_arr_int[2] ) ;
+	One_pin_debug_print ( (uint8_t *)uart_buff_char, strlen(uart_buff_char) ) ;
+
+	#define 	DATE_as_int_str 	(__DATE__)
+	#define 	TIME_as_int_str 	(__TIME__)
+	sprintf(uart_buff_char,"\t build: %s,  time: %s. \r\n" , DATE_as_int_str , TIME_as_int_str ) ;
+	One_pin_debug_print ( (uint8_t *)uart_buff_char, strlen(uart_buff_char) ) ;
+
+	HAL_TIM_Base_Start_IT(&htim3);
+	MH_Z14A_Init( );
 
 	lcd1602_fc113_struct h1_lcd1602_fc113 =
 		{
@@ -120,8 +141,8 @@ int main(void)
 		};
 
 	LCD1602_Init(&h1_lcd1602_fc113);
-	LCD1602_scan_I2C_bus( &h1_lcd1602_fc113 ) ;
-	LCD1602_Scan_I2C_to_UART( &h1_lcd1602_fc113, &huart1 ) ;
+	LCD1602_Scan_I2C_bus( &h1_lcd1602_fc113 ) ;
+	//LCD1602_Scan_I2C_to_UART( &h1_lcd1602_fc113, &huart1 ) ;
 	LCD1602_Clear(&h1_lcd1602_fc113);
 
 	sprintf(uart_buff_char,"LCD1602 Started\r\n");
@@ -131,7 +152,9 @@ int main(void)
 	LCD1602_Clear(&h1_lcd1602_fc113);
 	sprintf(uart_buff_char,"connect WiFi...\r\n");
 	LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
-	RingBuffer_DMA_Connect();
+
+	RingBuffer_DMA_Connect( );	// todo wait why answer is: "busy p..."
+
 	LCD1602_Clear(&h1_lcd1602_fc113);
 	sprintf(uart_buff_char,"WiFi Started\r\n");
 	LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
@@ -140,29 +163,40 @@ int main(void)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-  while (1)
-  {
-	  if (GetTimeFlag() == 1)
-	  {
-		static uint8_t circle=0;
+while (1)
+{
+	static uint32_t sec_counter_u32 ;
+	static uint8_t	time_to_work_u8 ;
+	static uint8_t 	circle_u8 = 0 		;
 
-		if (circle < CIRCLE_QNT)
+	if (GetTimeFlag() == 1) {
+		HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
+		sec_counter_u32++;
+
+		sprintf(uart_buff_char,"  %d) wait %02d \r", (int)(CIRCLE_QNT-circle_u8), (int)(60 - sec_counter_u32) ) ;
+		One_pin_debug_print ( (uint8_t *)uart_buff_char, strlen(uart_buff_char) ) ;
+		LCD1602_Clear(&h1_lcd1602_fc113);
+		LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
+
+		if (sec_counter_u32 > 59 )
 		{
-			LCD1602_Clear(&h1_lcd1602_fc113);
-			sprintf(uart_buff_char,"%d) ", (int)(CIRCLE_QNT-circle));
-			HAL_UART_Transmit(&huart1, (uint8_t *)uart_buff_char, strlen(uart_buff_char), 100);
-			LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
-			co2_u32[circle] = MH_Z14A_Main();
+			time_to_work_u8 = 1 ;
+			sec_counter_u32 = 0;
+		}
+		SetTimeFlag(0);
+	}
 
-			sprintf(uart_buff_char,"CO2: %d ppm\r\n", (int)co2_u32[circle]);
-			circle++;
-
+	if (time_to_work_u8 == 1 ) {
+		time_to_work_u8 = 0 ;
+		if (circle_u8 < CIRCLE_QNT) {
+			co2_u32[circle_u8] = MH_Z14A_Main( );
+			sprintf(uart_buff_char,"CO2: %d ppm\r\n", (int)co2_u32[circle_u8]);
 			LCD1602_Print_Line(&h1_lcd1602_fc113, uart_buff_char, strlen(uart_buff_char));
-			HAL_UART_Transmit(&huart1, (uint8_t *)uart_buff_char, strlen(uart_buff_char), 100);
+			One_pin_debug_print( (uint8_t *)uart_buff_char, strlen(uart_buff_char) ) ;
+			circle_u8++;
 		}
 
-		if (circle == CIRCLE_QNT)
-		{
+		if (circle_u8 == CIRCLE_QNT) {
 			uint32_t total_co2_u32 = Calc_Average( co2_u32, CIRCLE_QNT);
 
 			sprintf(uart_buff_char,"total CO2: %d\r\n", (int)total_co2_u32);
@@ -171,11 +205,10 @@ int main(void)
 
 			char http_req[200];
 			sprintf(http_req, "&field7=%d\r\n\r\n", (int)total_co2_u32 );
-			RingBuffer_DMA_Main(http_req);
-			circle = 0;
+			RingBuffer_DMA_Main( http_req ) ;	//	todo If answer is: "SEND FAIL"
+			circle_u8 = 0;
 		}
-		SetTimeFlag(0);
-	  }
+	}
 
     /* USER CODE END WHILE */
 
