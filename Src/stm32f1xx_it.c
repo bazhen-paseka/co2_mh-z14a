@@ -23,8 +23,6 @@
 #include "stm32f1xx_it.h"
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-	#include "one-pin-debug-sm.h"
-
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -240,9 +238,6 @@ void TIM3_IRQHandler(void)
   /* USER CODE BEGIN TIM3_IRQn 0 */
 
 	HAL_GPIO_TogglePin(LED_GREEN_GPIO_Port, LED_GREEN_Pin);
-	//uint8_t pin_debug[5] = { 'T', 'e', 'S', 't', '\0' } ;
-	uint8_t pin_debug[5] = { 0xF0, 0xAA, 0x55, 0xF0, '\0' } ;
-	One_pin_debug_print( pin_debug, 5 ) ;
 	sec_counter++;
 	if (sec_counter>60)
 	{
